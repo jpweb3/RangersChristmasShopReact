@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as _React from 'react';
 import { useState, useEffect } from 'react';
 
 // internal imports
@@ -13,6 +13,7 @@ export interface ShopState{
     price: string,
     prod_id: string,
     quantity: number 
+    order_id?: string
 }
 
 // interface to represent return of our hook
@@ -36,4 +37,30 @@ export const useGetShop = (): UseGetShopData => {
     }, [])
 
     return { shopData, getData: handleDataFetch}
+}
+
+interface UseGetOrderData {
+    orderData: ShopState[]
+    getData: () => void 
+}
+
+// create our custom hook that get's called automatically when we go our our shop page
+export const useGetOrder = (): UseGetOrderData => {
+    // set my hooks
+    const [orderData, setData] = useState<ShopState[]>([])
+
+    async function handleDataFetch(){
+        const result = await serverCalls.getOrder() //this is making our api call
+        console.log(result)
+        setData(result)
+    }
+
+    //useEffect takes in 2 arguments, 1 is the function to run, the other is the dependency its monitoring
+    useEffect( () => {
+        handleDataFetch()
+    }, []) //whatever its monitoring goes in this list 
+
+
+    return { orderData, getData: handleDataFetch }
+
 }
